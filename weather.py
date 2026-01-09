@@ -13,11 +13,13 @@ from preferences import Preferences
 class Weather:
     """
     Provides functions to get Environment Canada weather API and query it with AI for relevant information.
-        Version 0.0.2:
+    Version 0.0.3:    
+        - added extra command parameter for location code within Canada (eg. on-117 = Oshawa), and fixed debug log setting issues
+    Version 0.0.2:
         - simple elapsed time calculation and display for both the API call and AI call each
     """
 
-    version = "0.0.2"
+    version = "0.0.3"
 
     def __init__(self, preferences_file: str):
         # Instantiate Settings/Prefs
@@ -60,9 +62,8 @@ class Weather:
     def _configure_logging(self, log_mode: str):
         """Debug for DEBUG mode, Anything else for INFO"""
         # Default logging level set to Info but override to DEBUG with parameter
-        log_level = logging.INFO
-
-        if log_mode.lower == "debug":
+        log_level = logging.INFO        
+        if log_mode.lower() == "debug":
             log_level = logging.DEBUG
 
         logging.basicConfig(
@@ -71,14 +72,15 @@ class Weather:
             format='%(asctime)s - %(levelname)s - %(message)s'
         )    
 
-    def fetch_weather(self):
+    def fetch_weather(self, region_code: str):
         if self._fetching:
             return
         self._fetching = True
-
+        api = "https://api.weather.gc.ca/collections/citypageweather-realtime/items/{}?f=json"
+        api = api.format(region_code)
         try:
             resp = requests.get(
-                "https://api.weather.gc.ca/collections/citypageweather-realtime/items/on-117?f=json",
+                api,
                 timeout=10
             )
             if resp.status_code == 200:
@@ -111,26 +113,22 @@ class Weather:
 
     def main(self):
 
-        if len(sys.argv) < 2:
-            print("Usage: python news.py <MESSAGE_TO_AI>, <LOG_MODE> is Optional 'Debug' or 'Info' (default)")
-            return("<MESSAGE_TO_AI> parameter is required, News exiting")
+        if len(sys.argv) < 3:
+            print("Usage: python news.py <MESSAGE_TO_AI> <REGION_CODE>, <LOG_MODE> is Optional 'Debug' or 'Info' (default)")
+            return("<MESSAGE_TO_AI> and <REGION_CODE> parameters are required, Weather exiting")
             sys.exit(1)
         
         script = sys.argv[0]
         user_msg = sys.argv[1]
-
-        if len(sys.argv) == 3: #Make sure not None first
-            # print(f"Logging Mode: {sys.argv[2]}")
-            self._configure_logging(sys.argv[2])
-        
+        region_code = sys.argv[2]
 
         # Indicate start of the log for this run of the program
-        logging.info("\n💡")
+        logging.info("💡")
         logging.info(f"AI Backup Analyzer v{self.version} class currently using ModelConnection v{self.payload.connection.version}, PromptBuilder v{self.payload.prompts.version}, ChatHistoryManager v{self.payload.history.version}, Preferences v{self.preferences.version}, Payload v{self.payload.version}")      
 
         # Initialize AI analyzer, loading system instructions, token capacity, model, verbosity and reasoning effort for the response
         prompt = "weather"
-        self.payload.prompts.load_prompt(prompt)        
+        self.payload.prompts.load_prompt(prompt)
         self.payload.connection.set_maximum_tokens(500)
         
         # GPT 5 mini
@@ -148,7 +146,7 @@ class Weather:
 
         # Set string of weather data and user query in AI prompt
         startTime = datetime.now()
-        weather = self.fetch_weather()
+        weather = self.fetch_weather(region_code)
         endTime = datetime.now()
         elapsedTime = (endTime - startTime).total_seconds()
         logging.info(f"Weather API elapsed seconds: {elapsedTime}")
@@ -174,7 +172,7 @@ class Weather:
             response_val = ret or ""
             logging.debug(f"process_ai_response Return Value: {ret}")
         else:
-            response_val = "AI response error, could not clean "
+            response_val = "AI response error, could not clean"
             
         logging.info(f"main() Returning (response_val): [{response_val}]\n")        
 

@@ -4,4 +4,4 @@ A small command-line program that delivers accurate weather information from Env
 
 It takes the following parameters (besides the always necessary script name):
 - User query string ("What's the temperature?", etc.)
-- Optionally, Log mode string ("info", the default, or "debug", for whether detailed debug lines are recorded in the log or just basic info)
+- Region code (Canada-specific due to API, find your city in https://github.com/lschuyler/xbar-envcan-weather/blob/master/README.md#ontario)

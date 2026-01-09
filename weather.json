@@ -2,5 +2,5 @@
   "Prompts File": "prompts.json",
   "Chat History File": "chat_history.json",
   "Log File": "weather.log",
-  "Log Mode": "Info"
+  "Log Mode": "debug"
 }
