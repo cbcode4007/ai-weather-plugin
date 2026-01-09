@@ -6,15 +6,18 @@ import logging
 import re
 import sys
 import requests
+from datetime import datetime
 from ailib import Payload
 from preferences import Preferences
 
 class Weather:
     """
     Provides functions to get Environment Canada weather API and query it with AI for relevant information.
+        Version 0.0.2:
+        - simple elapsed time calculation and display for both the API call and AI call each
     """
 
-    version = "0.0.1"
+    version = "0.0.2"
 
     def __init__(self, preferences_file: str):
         # Instantiate Settings/Prefs
@@ -144,7 +147,11 @@ class Weather:
         self.payload.connection.set_reasoning_effort("minimal")
 
         # Set string of weather data and user query in AI prompt
+        startTime = datetime.now()
         weather = self.fetch_weather()
+        endTime = datetime.now()
+        elapsedTime = (endTime - startTime).total_seconds()
+        logging.info(f"Weather API elapsed seconds: {elapsedTime}")
         prompt_addendum = f"Weather: {weather}"  
 
         # Prepare and send message to AI
@@ -155,7 +162,11 @@ class Weather:
         self.payload.Auto_Add_AI_Response_To_History = True
 
         # Send the user mesage to AI and receive the response
+        startTime = datetime.now()
         reply = self.payload.send_message(user_msg, prompt, prompt_addendum)
+        endTime = datetime.now()
+        elapsedTime = (endTime - startTime).total_seconds()
+        logging.info(f"AI elapsed seconds: {elapsedTime}")
         logging.info(f"Assistant Raw Reply: {reply}")
 
         ret = self.process_ai_response(reply)
