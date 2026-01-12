@@ -2,5 +2,6 @@
   "Prompts File": "prompts.json",
   "Chat History File": "chat_history.json",
   "Log File": "weather.log",
-  "Log Mode": "debug"
+  "Log Mode": "debug",
+  "Region Code": "on-117"
 }

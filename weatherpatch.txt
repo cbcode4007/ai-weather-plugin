@@ -1,0 +1,46 @@
+16,18d15
+< 
+<     Version 0.0.4:    
+<         - Implementing the location code (region_code) as Setting instead of parameter
+25c22
+<     version = "0.0.4"
+---
+>     version = "0.0.3"
+36,38c33
+<         #DB - Adding class variable region_code and retrieving value from Settings/Preferences file
+<         self.region_code = self.preferences.get_setting_val("Region Code")
+<         
+---
+> 
+121,127c116,118
+<         #DB - Program changed so that only 2 parameters are accepted.  MESSAGE_TO_AI and optionally REGION_CODE.  This is because I added class variable region_code and retrieved value from Settings/Preferences file within this classes' init method instead of using a command line parameter.  Therefore there are now only 2 parameters, script name and MESSAGE_TO_AI
+<         #if len(sys.argv) < 3:
+<             # print("Usage: python news.py <MESSAGE_TO_AI> <REGION_CODE>, <LOG_MODE> is Optional 'Debug' or 'Info' (default)")
+<             # return("<MESSAGE_TO_AI> and <REGION_CODE> parameters are required, Weather exiting")
+<         if len(sys.argv) < 2:
+<             print("Usage: python news.py <MESSAGE_TO_AI>")
+<             return("<MESSAGE_TO_AI> parameter is required, Weather exiting")
+---
+>         if len(sys.argv) < 3:
+>             print("Usage: python news.py <MESSAGE_TO_AI> <REGION_CODE>, <LOG_MODE> is Optional 'Debug' or 'Info' (default)")
+>             return("<MESSAGE_TO_AI> and <REGION_CODE> parameters are required, Weather exiting")
+132,135c123,124
+<         
+<         #DB - Commenting the following because I added class variable region_code and retrieved value from Settings/Preferences file within this classes' init method instead of using this command line parameter
+<         #region_code = sys.argv[2]
+<         
+---
+>         region_code = sys.argv[2]
+> 
+160,162c149
+<         #DB - region_code is now a class variable and needs to be referred to as such
+<         #weather = self.fetch_weather(region_code)
+<         weather = self.fetch_weather(self.region_code)
+---
+>         weather = self.fetch_weather(region_code)
+165,167c152
+<         #DB Just making sure the region_code ends up in the info log.  Could be done in another logging location if preferred
+<         #logging.info(f"Weather API elapsed seconds: {elapsedTime}")
+<         logging.info(f"{self.region_code} Weather API fetch elapsed seconds: {elapsedTime}")
+---
+>         logging.info(f"Weather API elapsed seconds: {elapsedTime}")

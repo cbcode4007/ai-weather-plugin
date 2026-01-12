@@ -13,16 +13,13 @@ from preferences import Preferences
 class Weather:
     """
     Provides functions to get Environment Canada weather API and query it with AI for relevant information.
-
-    Version 0.0.4:    
-        - implemented the location code (region_code) as setting instead of parameter
     Version 0.0.3:    
         - added extra command parameter for location code within Canada (eg. on-117 = Oshawa), and fixed debug log setting issues
     Version 0.0.2:
         - simple elapsed time calculation and display for both the API call and AI call each
     """
 
-    version = "0.0.4"
+    version = "0.0.3"
 
     def __init__(self, preferences_file: str):
         # Instantiate Settings/Prefs
@@ -33,8 +30,7 @@ class Weather:
         chat_hist_file = self.preferences.get_setting_val("Chat History File")
         self.log_file = self.preferences.get_setting_val("Log File")
         log_mode = self.preferences.get_setting_val("Log Mode")
-        self.region_code = self.preferences.get_setting_val("Region Code")
-        
+
         # Setup Log file and current mode (Debug or Info)
         self._configure_logging(log_mode)
 
@@ -117,14 +113,15 @@ class Weather:
 
     def main(self):
 
-        if len(sys.argv) < 2:
-            print("Usage: python news.py <MESSAGE_TO_AI>")
-            return("<MESSAGE_TO_AI> parameter is required, Weather exiting")
+        if len(sys.argv) < 3:
+            print("Usage: python news.py <MESSAGE_TO_AI> <REGION_CODE>, <LOG_MODE> is Optional 'Debug' or 'Info' (default)")
+            return("<MESSAGE_TO_AI> and <REGION_CODE> parameters are required, Weather exiting")
             sys.exit(1)
         
         script = sys.argv[0]
         user_msg = sys.argv[1]
-        
+        region_code = sys.argv[2]
+
         # Indicate start of the log for this run of the program
         logging.info("💡")
         logging.info(f"AI Backup Analyzer v{self.version} class currently using ModelConnection v{self.payload.connection.version}, PromptBuilder v{self.payload.prompts.version}, ChatHistoryManager v{self.payload.history.version}, Preferences v{self.preferences.version}, Payload v{self.payload.version}")      
@@ -149,10 +146,10 @@ class Weather:
 
         # Set string of weather data and user query in AI prompt
         startTime = datetime.now()
-        weather = self.fetch_weather(self.region_code)
+        weather = self.fetch_weather(region_code)
         endTime = datetime.now()
-        elapsedTime = (endTime - startTime).total_seconds()        
-        logging.info(f"{self.region_code} Weather API fetch elapsed seconds: {elapsedTime}")
+        elapsedTime = (endTime - startTime).total_seconds()
+        logging.info(f"Weather API elapsed seconds: {elapsedTime}")
         prompt_addendum = f"Weather: {weather}"  
 
         # Prepare and send message to AI
