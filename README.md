@@ -1,4 +1,4 @@
-## AI Weather Plugin
+## AI Weather Report
 
 A small command-line program that delivers accurate weather information from Environment Canada upon request, tailored to the exact contents of the question. It is mainly meant to be used as part of the AI Operator framework, which will call it to defer any weather-related queries.
 
